@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using SunnyBlazor.Data;
 using SunnyBlazor.Repository.IRepository;
 
@@ -11,27 +12,27 @@ namespace SunnyBlazor.Repository
             this._db = db;
             
         }
-        public Category Create(Category category)
+        public async Task<Category> CreateAsync(Category category)
         {
            _db.Category.Add(category);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
             return category;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-           var obj= _db.Category.FirstOrDefault(u =>  u.Id == id);
+           var obj= await _db.Category.FirstOrDefaultAsync(u =>  u.Id == id);
             if (obj != null)
             {
                 _db.Remove(id);
-                return _db.SaveChanges() > 0;
+                return await _db.SaveChangesAsync() > 0;
             }
             return false;
         }
 
-        public Category Get(int id)
+        public async Task<Category> GetAsync(int id)
         {
-            var obj = _db.Category.FirstOrDefault(u => u.Id == id);
+            var obj = await _db.Category.FirstOrDefaultAsync(u => u.Id == id);
             if (obj != null)
             {
                 return obj;
@@ -39,19 +40,19 @@ namespace SunnyBlazor.Repository
             return new Category();
         }
 
-        public IEnumerable<Category> GetAll()
+        public async Task<IEnumerable<Category>> GetAllAsync()
         {
-            return _db.Category.ToList();
+            return await _db.Category.ToListAsync();
         }
 
-        public Category Update(Category category)
+        public async Task<Category> UpdateAsync(Category category)
         {
-            var objFromDb= _db.Category.FirstOrDefault(u => u.Id == category.Id);
+            var objFromDb= await _db.Category.FirstOrDefaultAsync(u => u.Id == category.Id);
             if (objFromDb != null)
             {
                 objFromDb.Name = category.Name;
                 _db.Update(objFromDb);
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
                 return objFromDb;
             }
             return category;
