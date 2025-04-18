@@ -24,7 +24,7 @@ namespace SunnyBlazor.Repository
            var obj= await _db.Category.FirstOrDefaultAsync(u =>  u.Id == id);
             if (obj != null)
             {
-                _db.Remove(id);
+                _db.Category.Remove(obj);
                 return await _db.SaveChangesAsync() > 0;
             }
             return false;
