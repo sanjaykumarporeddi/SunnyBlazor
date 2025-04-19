@@ -1,7 +1,7 @@
-@page "/category/create"
-@page "/category/update/{id:int}"
+@page "/product/create"
+@page "/product/update/{id:int}"
 
-@inject ICategoryRepository _categoryRepository
+@inject IProductRepository _productRepository
 @inject NavigationManager   _navigationManager
 @inject IJSRuntime _JS
 @if (IsProcessing)
@@ -13,23 +13,23 @@
 else
 {
     <div class="card shadow border-0 mt-4">
-        <div class="card-header bg-black bg-gradient">
+        <div class="card-header bg-black bg-gradient ml-0 py-3">
             <div class="row">
                 <div class="col-12 text-center">
-                    <h2 class="text-white py-2">@(Id>0?"Create":"Update") Category</h2>
+                    <h2 class="text-white py-2">@(Id>0?"Create":"Update") Product</h2>
                 </div>
 
             </div>
         </div>
         <div class="card-body p-4">
-            <EditForm Model="Category" FormName="CategoryUpsertForm" 
-                OnValidSubmit="UpsertCategory">
+            <EditForm Model="Product" FormName="ProductUpsertForm" 
+                OnValidSubmit="UpsertProduct">
                 <DataAnnotationsValidator /> 
                 <div class="border p-3 mt-4">
                     <div class="form-floating py-3 col-12">
-                        <InputText @bind-Value="Category.Name" class="form-control" id="Name" placeholder="Name"/>
+                        <InputText @bind-Value="Product.Name" class="form-control" id="Name" placeholder="Name"/>
                             <label for="Name">Name</label>
-                            <ValidationMessage For="@(() => Category.Name)"/> 
+                            <ValidationMessage For="@(() => Product.Name)"/> 
                     </div>
                     <div class="row mt-3">
                         <div class="col-6 col-md-3">
@@ -38,11 +38,10 @@ else
                             </button>
                         </div>
                         <div class="col-6 col-md-3">
-                            <button type="button" class="btn btn-secondary form-control" disabled="@IsProcessing" @onclick="ResetAndNavigateBack">
+                            <a href="product" class="btn btn-secondary form-control" disabled="@IsProcessing">
                                 <i class="bi bi-arrow-bar-left"></i> Back to List
-                            </button>
+                            </a>
                         </div>
-
                     </div>
                 </div>
             </EditForm>
@@ -56,19 +55,20 @@ else
     public int Id { get; set; }
 
     [SupplyParameterFromForm]
-    private Category Category { get; set; } = new Category();
-    private Category OriginalCategory { get; set; } = new Category();
+    private Product Product { get; set; } = new Product();
+    private Product OriginalProduct { get; set; } = new Product();
     private bool IsProcessing { get; set; } = true;
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await LoadCategory();
-            OriginalCategory = new Category
+            await LoadProduct();
+            OriginalProduct = new Product
             {
-                Id = Category.Id,
-                Name = Category.Name
+                Id = Product.Id,
+                Name = Product.Name
             };
             IsProcessing = false;
             StateHasChanged();
@@ -78,35 +78,35 @@ else
 
     private void ResetAndNavigateBack()
     {
-        // Reset the Category object to its original state
-        Category.Name = OriginalCategory.Name;
+        // Reset the Product object to its original state
+        Product.Name = OriginalProduct.Name;
 
         // Navigate back to the list page
-        _navigationManager.NavigateTo("category");
+        _navigationManager.NavigateTo("product");
     }
-    private async Task LoadCategory()
+    private async Task LoadProduct()
     {
         if(Id>0)
-            Category = await _categoryRepository.GetAsync(Id);
+            Product = await _productRepository.GetAsync(Id);
     }
 
-    private async Task UpsertCategory()
+    private async Task UpsertProduct()
     {
         IsProcessing = true;
-        if(Category.Id == 0)
+        if(Product.Id == 0)
         {
             //create
-            await _categoryRepository.CreateAsync(Category);
-            await _JS.ToastrSuccess("Category Created Successfully");
+            await _productRepository.CreateAsync(Product);
+            await _JS.ToastrSuccess("Product Created Successfully");
         }
         else
         {
             //update
-            await _categoryRepository.UpdateAsync(Category);
+            await _productRepository.UpdateAsync(Product);
 
-            await _JS.ToastrSuccess("Category Updated Successfully");
+            await _JS.ToastrSuccess("Product Updated Successfully");
         }
         IsProcessing = false;
-        _navigationManager.NavigateTo("category");
+        _navigationManager.NavigateTo("product");
     }
 }
